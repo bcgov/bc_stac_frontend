@@ -1,0 +1,157 @@
+@import '~leaflet/dist/leaflet.css';
+@import '~leaflet-draw/dist/leaflet.draw.css';
+
+#map-page-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+#app-container {
+	display: flex;
+	height: 100%;
+}
+
+#app-header {
+    display: flex;
+    padding: 5px 10px;
+    background-color: #003366;
+    color: #fff;
+}
+
+#home-button {
+    margin: auto 0 auto 10px;
+    position: flex-start;
+    color: #fff;
+    font-size: 20px;
+}
+
+#app-header h1 {
+    margin: auto;
+}
+
+.leaflet-control-container .leaflet-top .leaflet-control-zoom {
+	border: none;
+}
+
+.leaflet-control-container .leaflet-top .leaflet-control-zoom a.leaflet-control-zoom-in { 
+	margin-bottom: 5px;
+	border-radius: 50px;
+	background: #003366;
+	color: #FCB918; 
+}
+
+.leaflet-control-container .leaflet-top .leaflet-control-zoom a.leaflet-control-zoom-out { 
+	border-radius: 50px;
+	background: #003366;
+	color: #FCB918;  
+}
+
+.leaflet-bar a.leaflet-disabled {
+	background: #BBBBBB !important;
+	color: #666666 !important; 
+}
+
+.leaflet-draw-toolbar a {
+	background-image: url('https://unpkg.com/leaflet-draw@1.0.2/dist/images/spritesheet.png');
+	background-repeat: no-repeat;
+	color: transparent !important;
+  }
+
+#selector-panel {
+	width: 400px;
+	margin: 5px;
+	border: 2px solid #003366;
+	border-radius: 10px;
+	padding: 10px;
+	background: #fff;
+	color: #000;
+}
+
+#selector-panel h3{
+	text-align: center;
+	font-size: 26px;
+}
+
+#map-container {
+	flex-grow: 1;
+    position: relative;
+	margin: 5px;
+	border: 2px solid #003366;
+	border-radius: 10px;
+}
+
+.leaflet-container {
+	border-radius: 10px;
+}
+
+#info-panel {
+	width: 400px;
+	margin: 5px;
+	border: 2px solid #003366;
+	border-radius: 10px;
+	padding: 10px;
+	background: #fff;
+	color: #000;
+}
+
+#image-preview {
+	width: 100%;
+}
+
+#image-preview img {
+	border: 2px solid #525252;
+	width: 100%;
+}
+
+#feature-info {
+	display: flex;
+	flex-direction: column;
+	padding: 10px 20px;
+	background: #f7f7f7;
+	border: 1px solid #000;
+	border-radius: 20px;
+	color: #000;
+}
+
+#feature-info  h3 {
+	margin-top: 0;
+	margin-bottom: 10px;
+	text-align: center;
+	font-size: 26px;
+}
+
+#feature-info  p {
+	margin: 10px 0;
+}
+
+#feature-info  a {
+	display: flex;
+	margin: 10px auto;
+	padding: 5px 40px;
+	background-color: #003366;
+	color: #fff;
+	border-radius: 50px;
+	text-decoration: none;
+	box-shadow: 0px 4px 8px rgba(26, 26, 26, 0.2);
+}
+
+#feature-info  a:hover {
+	background-color: #215283;
+}
+
+button {
+	margin-top: 20px;
+	padding: 8px;
+	width: 100%;
+	border: none;
+	border-radius: 50px;
+	background: #003366;
+	color: white;
+	cursor: pointer;
+	box-shadow: 0px 4px 8px rgba(26, 26, 26, 0.2);
+}
+
+button:hover {
+	background: #215283;
+}
