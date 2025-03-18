@@ -9,9 +9,22 @@ export const bounds: L.LatLngBounds = L.latLngBounds(southWest, northEast);
 export const maxZoomNum: number = 15;
 export const minZoomNum: number = 5;
 
-// Initialize the map with necessary layers and controls
-export const initializeMap = async (mapContainerRef: HTMLDivElement | null, stacCollectionID: any, mapRef: React.RefObject<L.Map | null>) => {
-  if (!mapContainerRef || mapRef.current) return;
+// Define the structure of the selectedFeature for type safety
+interface SelectedFeature {
+  assets: {
+    rendered_preview?: {
+      href: string;
+    };
+  };
+  bbox: number[];
+}
+
+export const initializeMap = async (
+  mapContainerRef: HTMLDivElement | null,
+  stacCollectionID: string,
+  mapRef: React.RefObject<L.Map | null>
+): Promise<L.LatLngBounds | null> => {
+  if (!mapContainerRef || mapRef.current) return null;
 
   const mapInstance = L.map(mapContainerRef, {
     maxBounds: bounds,
@@ -25,25 +38,31 @@ export const initializeMap = async (mapContainerRef: HTMLDivElement | null, stac
     attribution: "&copy; OpenStreetMap contributors",
   }).addTo(mapInstance);
 
-  const stacCollection = await fetchSTACCollection(stacCollectionID);
   let stacBounds: L.LatLngBounds | null = null;
 
-  // Draw the bounding box of the entire STAC collection
-  if (stacCollection.extent.spatial.bbox[0]) {
-    const bboxCorners: L.LatLngBoundsExpression = [
-      [stacCollection.extent.spatial.bbox[0][1], stacCollection.extent.spatial.bbox[0][0]] as L.LatLngTuple, // SW
-      [stacCollection.extent.spatial.bbox[0][3], stacCollection.extent.spatial.bbox[0][2]] as L.LatLngTuple, // NE
-    ];
-    L.rectangle(bboxCorners, { color: "black", weight: 4, fillOpacity: 0 }).addTo(mapInstance);
+  try {
+    const { collectionData, collectionUrl } = await fetchSTACCollection(stacCollectionID);
 
-    // Fit the map view to the STAC bounding box
-    mapInstance.fitBounds(bboxCorners);
+    // Draw the bounding box of the entire STAC collection
+    if (collectionData.extent.spatial.bbox[0]) {
+      const bboxCorners: L.LatLngBoundsExpression = [
+        [collectionData.extent.spatial.bbox[0][1], collectionData.extent.spatial.bbox[0][0]], // SW
+        [collectionData.extent.spatial.bbox[0][3], collectionData.extent.spatial.bbox[0][2]], // NE
+      ];
+      L.rectangle(bboxCorners, { color: "black", weight: 4, fillOpacity: 0 }).addTo(mapInstance);
 
-    // Set the stacBounds
-    stacBounds = L.latLngBounds(bboxCorners);
+      // Fit the map view to the STAC bounding box
+      mapInstance.fitBounds(bboxCorners);
+
+      // Set the stacBounds
+      stacBounds = L.latLngBounds(bboxCorners);
+    }
+
+    initializeSTACLayers(mapInstance);
+
+  } catch (error) {
+    console.error('Error fetching STAC collection:', error);
   }
-
-  initializeSTACLayers(mapInstance)
 
   // Initialize Leaflet Draw control
   const drawnItems = new L.FeatureGroup();
@@ -71,7 +90,7 @@ export const initializeMap = async (mapContainerRef: HTMLDivElement | null, stac
   mapInstance.addControl(drawControl);
 
   // Listen for the draw:created event to add shapes to the map
-  mapInstance.on(L.Draw.Event.CREATED, (e: any) => {
+  mapInstance.on(L.Draw.Event.CREATED, (e: L.DrawEvents.Created) => {
     const layer = e.layer;
     drawnItems.addLayer(layer);
   });
@@ -84,14 +103,17 @@ export const initializeMap = async (mapContainerRef: HTMLDivElement | null, stac
 let selectedFeatureLayer: L.Layer | null = null;
 
 // Fit the map to a selected feature's bounding box and add image overlays if necessary
-export const updateMapWithSelectedFeature = (selectedFeature: any, mapRef: React.RefObject<L.Map | null>) => {
+export const updateMapWithSelectedFeature = (
+  selectedFeature: SelectedFeature | null,
+  mapRef: React.RefObject<L.Map | null>
+): void => {
   if (!mapRef.current || !selectedFeature) return;
 
   const map = mapRef.current;
-  const assets = selectedFeature.assets;
+  const { assets, bbox } = selectedFeature;
   const featBounds = L.latLngBounds(
-    [selectedFeature.bbox[1], selectedFeature.bbox[0]], 
-    [selectedFeature.bbox[3], selectedFeature.bbox[2]]
+    [bbox[1], bbox[0]], // SW
+    [bbox[3], bbox[2]]  // NE
   );
 
   // Remove previous feature highlight if it exists
@@ -103,6 +125,7 @@ export const updateMapWithSelectedFeature = (selectedFeature: any, mapRef: React
   const featureLayer = L.rectangle(featBounds, { color: "red", weight: 3, fillOpacity: 0.4 }).addTo(map);
   selectedFeatureLayer = featureLayer; // Store reference
 
+  // Add image overlay if it exists
   if (assets?.rendered_preview) {
     L.imageOverlay(assets.rendered_preview.href, featBounds).addTo(map);
   }
@@ -112,19 +135,19 @@ export const updateMapWithSelectedFeature = (selectedFeature: any, mapRef: React
 
 // Function to reset the map view
 export const resetMapView = (
-    mapRef: React.RefObject<L.Map | null>,
-    setSelectedFeature: React.Dispatch<React.SetStateAction<any | null>>,
-    stacBounds: L.LatLngBounds | null
-  ) => {
-    if (mapRef.current && stacBounds) {
-      const map = mapRef.current;
-      map.fitBounds(stacBounds); // Reset to STAC collection bounds
-      setSelectedFeature(null);  // Clear selected feature
+  mapRef: React.RefObject<L.Map | null>,
+  setSelectedFeature: React.Dispatch<React.SetStateAction<any | null>>,
+  stacBounds: L.LatLngBounds | null
+): void => {
+  if (mapRef.current && stacBounds) {
+    const map = mapRef.current;
+    map.fitBounds(stacBounds); // Reset to STAC collection bounds
+    setSelectedFeature(null);  // Clear selected feature
 
-      // Remove the highlighted feature layer
-      if (selectedFeatureLayer) {
-        map.removeLayer(selectedFeatureLayer);
-        selectedFeatureLayer = null;
-      }
+    // Remove the highlighted feature layer
+    if (selectedFeatureLayer) {
+      map.removeLayer(selectedFeatureLayer);
+      selectedFeatureLayer = null;
     }
-  };
+  }
+};

@@ -14,7 +14,7 @@ if (appElement) {
       <PageHeader />
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/map" element={<MapPage />} />
+        <Route path="/map/*" element={<MapPage />} />
       </Routes>
       <PageFooter />
     </Router>

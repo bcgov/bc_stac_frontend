@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchAllSTACCollections } from "../utils/stacUtils";
+import { stac_url, fetchAllSTACCollections } from "../utils/stacUtils";
+import CopyUrlComponent from "../components/CopyUrlComponent";
 import "./LandingPage.scss";
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const [collections, setCollections] = useState<any[]>([]);
+  const [catalogUrl, setCatalogUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const loadCollections = async () => {
@@ -59,6 +61,9 @@ const LandingPage = () => {
         <h1>STAC Browser</h1>
         <p>Welcome to the SpatioTemporal Asset Catalog (STAC) Browser. Click on a collection to view its items.</p>
         <p>Click on a collection to view its items.</p>
+      </div>
+      <div>
+        <CopyUrlComponent url={stac_url} />
       </div>
       <div className="card-container">
         {collectionCards}

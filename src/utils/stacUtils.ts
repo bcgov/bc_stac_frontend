@@ -1,12 +1,12 @@
 import L from "leaflet";
 
 // URL for your STAC API
-const url = "https://pgstac-backend.apps.silver.devops.gov.bc.ca/";
+export const stac_url = "https://pgstac-backend.apps.silver.devops.gov.bc.ca/";
 const request_origin = location.origin;
 
 // Function to fetch the STAC collections
 export async function fetchAllSTACCollections() {
-  const collectionsUrl = `${url}collections`;
+  const collectionsUrl = `${stac_url}collections`;
   const response = await fetch(collectionsUrl, {
     method: "GET",
     headers: {
@@ -24,7 +24,7 @@ export async function fetchAllSTACCollections() {
 
 // Function to fetch a specific STAC Collection based on Collection ID
 export async function fetchSTACCollection(collectionId: string) {
-  const collectionUrl = `${url}collections/${collectionId}`;
+  const collectionUrl = `${stac_url}collections/${collectionId}`;
   const response = await fetch(collectionUrl, {
     method: "GET",
     headers: {
@@ -37,7 +37,8 @@ export async function fetchSTACCollection(collectionId: string) {
   if (!response.ok) {
     throw new Error(`Failed to fetch STAC Collection data: ${response.statusText}`);
   }
-  return await response.json();
+  const data = await response.json();
+  return { collectionData: data, collectionUrl };
 }
 
 // Function to fetch items for a given STAC Collection
@@ -61,7 +62,8 @@ export async function fetchSTACItems(
     params.append("bbox", "-139.1,48.3,-114.0,60.0"); // Default BC bounding box
   }
 
-  const itemsUrl = `${url}collections/${collectionId}/items?${params.toString()}`;
+  const collectionUrl = `${stac_url}collections/${collectionId}`;
+  const itemsUrl = `${stac_url}collections/${collectionId}/items?${params.toString()}`;
   const response = await fetch(itemsUrl, {
     method: "GET",
     headers: {
@@ -74,7 +76,9 @@ export async function fetchSTACItems(
   if (!response.ok) {
     throw new Error(`Failed to fetch STAC data: ${response.statusText}`);
   }
-  return await response.json();
+
+  const data = await response.json();
+  return { data, collectionUrl };
 }
 
 // Function to create a Leaflet GeoJSON layer for each feature
@@ -105,16 +109,16 @@ export async function initializeSTACLayers(map: L.Map) {
   try {
     // Get the collection ID from the URL parameters (e.g., ?collection=yourCollectionId)
     const urlParams = new URLSearchParams(window.location.search);
-    const collectionId = urlParams.get('collectionID');
+    const collectionId = urlParams.get("collectionID");
 
     if (!collectionId) {
       console.error("No collection ID found in URL parameters");
       return;
     }
 
-    // Fetch items from the specified collection
-    const itemsData = await fetchSTACItems(collectionId);
-    const items = itemsData.features || [];
+    // Fetch items from the specified collection (gets both data & URL)
+    const { data } = await fetchSTACItems(collectionId);
+    const items = data.features || [];
 
     // Add layers for the fetched items
     for (const feature of items) {

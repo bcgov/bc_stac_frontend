@@ -26,7 +26,7 @@ const PageHeader: React.FC = () => {
 
 const PageFooter: React.FC = () => {
   const location = useLocation();
-  const isMapPage = useMatch("/map*");
+  const isMapPage = useMatch("/map/*");
 
   return (
     <div>
