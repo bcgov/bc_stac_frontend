@@ -1,0 +1,23 @@
+.copy-url-container {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.url-input {
+  margin: 0;
+  width: fit-content;
+}
+
+.copy-btn {
+  margin: 0;
+  padding: 5px 20px;
+  width: fit-content;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+
+  &.copied {
+    background-color: #28a745; // Green background when copied
+  }
+}
