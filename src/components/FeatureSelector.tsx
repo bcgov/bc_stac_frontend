@@ -65,17 +65,21 @@ const FeatureSelector: React.FC<FeatureSelectorProps> = ({ features, onSelectFea
   return (
     <div className="feature-selector">
       <div className="feature-list">
-        {filteredFeatures.map((feature) => (
-          <div
-            key={feature.id}
-            className={`feature-card ${selectedFeatureId === feature.id ? "selected" : ""}`}
-            onClick={() => handleSelect(feature)}
-          >
-            {feature.id}
-          </div>
-        ))}
+        {filteredFeatures.length > 0 ? (
+          filteredFeatures.map((feature) => (
+            <div
+              key={feature.id}
+              className={`feature-card ${selectedFeatureId === feature.id ? "selected" : ""}`}
+              onClick={() => handleSelect(feature)}
+            >
+              {feature.id}
+            </div>
+          ))
+        ) : (
+          <p className="no-results-message">No features found for the selected date range.</p>
+        )}
       </div>
-
+  
       <div className="date-filter">
         <label>Start Date:</label>
         <input
@@ -91,10 +95,11 @@ const FeatureSelector: React.FC<FeatureSelectorProps> = ({ features, onSelectFea
         />
         <button onClick={handleApplyDateFilter}>Set Date Filter</button>
       </div>
-
+  
       <button className="reset-button" onClick={handleReset}>Reset Map View</button>
     </div>
   );
 };
+  
 
 export default FeatureSelector;
