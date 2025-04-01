@@ -1,0 +1,32 @@
+.copy-url-container {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid #003366;
+  border-radius: 10px;
+  width: fit-content;
+}
+
+.copy-url-container label{
+  font-size: 14px;
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+.url-input {
+  margin-right: 10px;
+}
+
+.copy-btn {
+  margin: 0;
+  padding: 5px 20px;
+  width: fit-content;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+
+  &.copied {
+    background-color: #28a745;
+  }
+}

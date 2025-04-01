@@ -1,0 +1,73 @@
+@import '~leaflet/dist/leaflet.css';
+@import '~leaflet-draw/dist/leaflet.draw.css';
+
+#map-page-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+#app-container {
+	display: flex;
+	height: 100%;
+}
+
+#app-header {
+    display: flex;
+	justify-content: center;
+	align-items: center;
+    padding: 5px 10px;
+    background-color: #003366;
+    color: #fff;
+}
+
+#home-button {
+    margin: auto auto auto 10px;
+    position: flex-start;
+    color: #fff;
+    font-size: 20px;
+}
+
+#app-header h1 {
+	margin: auto;
+}
+
+.leaflet-control-container .leaflet-top .leaflet-control-zoom {
+	border: none;
+}
+
+.leaflet-control-container .leaflet-top .leaflet-control-zoom a.leaflet-control-zoom-in { 
+	margin-bottom: 5px;
+	border-radius: 50px;
+	background: #003366;
+	color: #FCB918; 
+}
+
+.leaflet-control-container .leaflet-top .leaflet-control-zoom a.leaflet-control-zoom-out { 
+	border-radius: 50px;
+	background: #003366;
+	color: #FCB918;  
+}
+
+.leaflet-bar a.leaflet-disabled {
+	background: #BBBBBB !important;
+	color: #666666 !important; 
+}
+
+.leaflet-draw-toolbar a {
+	background-image: url('https://unpkg.com/leaflet-draw@1.0.2/dist/images/spritesheet.png');
+	background-repeat: no-repeat;
+	color: transparent !important;
+  }
+
+#map-container {
+	flex-grow: 1;
+    position: relative;
+	margin: 5px;
+	border-radius: 10px;
+	border: 2px solid #CCCCCC;
+}
+
+.leaflet-container {
+	border-radius: 10px;
+}
